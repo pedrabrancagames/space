@@ -107,7 +107,7 @@ export class AlienGrid {
     /**
      * Atualiza posição e animação dos aliens
      * @param {number} deltaTime - Tempo desde o último frame
-     * @returns {boolean} true se algum alien atingiu o chão
+     * @returns {boolean} true se algum alien atingiu o chão (sempre false neste modo)
      */
     update(deltaTime) {
         if (!this.group || this.aliens.length === 0) return false;
@@ -115,73 +115,26 @@ export class AlienGrid {
         // Atualizar tempo de animação
         this.wiggleTime += deltaTime * 3;
 
-        // Verificar se precisa mudar de direção
-        let needsToChangeDirection = false;
-        let hitGround = false;
-
-        // Encontrar aliens mais à esquerda e à direita
-        let leftMost = Infinity;
-        let rightMost = -Infinity;
-        let lowestY = Infinity;
-
+        // Aliens ficam parados - sem movimento horizontal ou vertical
+        // Apenas aplicar animação de "wiggle" para dar vida visual
         for (const row of this.aliens) {
             for (const alien of row) {
                 if (!alien.userData.isAlive) continue;
 
-                const worldPos = new THREE.Vector3();
-                alien.getWorldPosition(worldPos);
-
-                leftMost = Math.min(leftMost, worldPos.x);
-                rightMost = Math.max(rightMost, worldPos.x);
-                lowestY = Math.min(lowestY, worldPos.y);
-            }
-        }
-
-        // Verificar se atingiu as bordas
-        if (rightMost >= this.boundaryX && this.direction === 1) {
-            needsToChangeDirection = true;
-        } else if (leftMost <= -this.boundaryX && this.direction === -1) {
-            needsToChangeDirection = true;
-        }
-
-        // Verificar se algum alien atingiu o chão (mais espaço = mais estágios)
-        if (lowestY <= -5) {
-            hitGround = true;
-        }
-
-        // Aplicar movimento
-        if (needsToChangeDirection) {
-            this.direction *= -1;
-            this.group.position.y -= this.dropDistance;
-
-            // Aumentar velocidade a cada mudança de direção
-            this.moveSpeed *= 1.02;
-        } else {
-            this.group.position.x += this.direction * this.moveSpeed;
-        }
-
-        // Aplicar animação de "wiggle" para cada alien
-        for (const row of this.aliens) {
-            for (const alien of row) {
-                if (!alien.userData.isAlive) continue;
-
-                // Rotação suave
+                // Rotação suave (wiggle)
                 const wiggle = Math.sin(this.wiggleTime + alien.userData.wiggleOffset) * this.wiggleAmount;
                 alien.rotation.z = wiggle;
 
-                // Pequena oscilação vertical
-                const bounce = Math.sin(this.wiggleTime * 2 + alien.userData.wiggleOffset) * 0.02;
+                // Pequena oscilação vertical (floating effect)
+                const bounce = Math.sin(this.wiggleTime * 2 + alien.userData.wiggleOffset) * 0.03;
                 alien.position.y = alien.userData.originalY + bounce;
-
-                // Salvar posição Y original se não existir
-                if (alien.userData.originalY === undefined) {
-                    alien.userData.originalY = alien.position.y;
-                }
             }
         }
 
-        return hitGround;
+        // Aliens não descem mais, então nunca atingem o chão
+        return false;
     }
+
 
     /**
      * Destrói um alien específico
