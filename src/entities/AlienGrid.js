@@ -90,10 +90,12 @@ export class AlienGrid {
                 // Armazenar posição inicial no grid
                 alien.userData.gridRow = row;
                 alien.userData.gridCol = col;
+                alien.userData.originalY = y; // IMPORTANTE: Salvar Y original para animação
 
                 this.group.add(alien);
                 rowAliens.push(alien);
             }
+
 
             this.aliens.push(rowAliens);
         }
