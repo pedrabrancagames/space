@@ -1,27 +1,30 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#0a0a0f">
   <meta name="description" content="AR Space Invaders - Jogo de Realidade Aumentada estilo Space Invaders">
-  
+
   <!-- PWA -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  
+
   <title>AR Space Invaders 👾</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👾</text></svg>">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👾</text></svg>">
   <link rel="stylesheet" href="/src/styles/main.css">
 </head>
+
 <body>
   <!-- Camera Video Background -->
   <video id="camera-feed" autoplay playsinline muted></video>
-  
+
   <!-- Three.js Canvas -->
   <canvas id="game-canvas"></canvas>
-  
+
   <!-- HUD Overlay -->
   <div id="hud" class="hidden">
     <div class="hud-top">
@@ -42,23 +45,23 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Crosshair -->
     <div id="crosshair">
       <div class="crosshair-circle"></div>
       <div class="crosshair-dot"></div>
     </div>
-    
+
     <!-- Touch Area for Shooting -->
     <div id="shoot-area"></div>
-    
+
     <!-- Combo indicator -->
     <div id="combo" class="hidden">
       <span id="combo-count">x2</span>
       <span class="combo-label">COMBO!</span>
     </div>
   </div>
-  
+
   <!-- Splash Screen -->
   <div id="splash-screen">
     <div class="splash-content">
@@ -67,40 +70,40 @@
         <span class="title-space">SPACE</span>
         <span class="title-invaders">INVADERS</span>
       </h1>
-      
+
       <div class="alien-preview">
         <span class="alien alien-1">👾</span>
         <span class="alien alien-2">👾</span>
         <span class="alien alien-3">👾</span>
       </div>
-      
+
       <p class="instructions">
         Aponte a câmera para o céu e destrua os aliens antes que eles toquem o chão!
       </p>
-      
+
       <div class="controls-info">
         <div class="control">
           <span class="control-icon">👆</span>
           <span class="control-text">Toque para atirar</span>
         </div>
       </div>
-      
+
       <button id="start-button" class="glow-button">
         <span class="button-icon">📷</span>
         <span class="button-text">INICIAR JOGO</span>
       </button>
-      
+
       <p class="camera-notice">
         O jogo precisa de acesso à câmera para funcionar
       </p>
     </div>
   </div>
-  
+
   <!-- Game Over Screen -->
   <div id="game-over-screen" class="hidden">
     <div class="game-over-content">
       <h2 class="game-over-title">GAME OVER</h2>
-      
+
       <div class="final-stats">
         <div class="stat">
           <span class="stat-label">PONTUAÇÃO FINAL</span>
@@ -115,19 +118,19 @@
           <span id="aliens-killed" class="stat-value">0</span>
         </div>
       </div>
-      
+
       <button id="restart-button" class="glow-button">
         <span class="button-icon">🔄</span>
         <span class="button-text">JOGAR NOVAMENTE</span>
       </button>
     </div>
   </div>
-  
+
   <!-- Error Screen -->
   <div id="error-screen" class="hidden">
     <div class="error-content">
-      <span class="error-icon">📵</span>
-      <h2 class="error-title">Câmera Indisponível</h2>
+      <span id="error-icon" class="error-icon">📵</span>
+      <h2 id="error-title" class="error-title">Erro</h2>
       <p class="error-message" id="error-message">
         Não foi possível acessar a câmera. Verifique as permissões do navegador.
       </p>
@@ -136,7 +139,7 @@
       </button>
     </div>
   </div>
-  
+
   <!-- Loading Screen -->
   <div id="loading-screen" class="hidden">
     <div class="loading-content">
@@ -147,4 +150,5 @@
 
   <script type="module" src="/src/main.js"></script>
 </body>
+
 </html>

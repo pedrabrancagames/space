@@ -174,7 +174,16 @@ export class GameManager {
 
         } catch (error) {
             console.error('❌ Erro ao iniciar jogo:', error);
-            this.screens.showError(error.message);
+
+            let title = 'Erro de Sistema';
+            let icon = '❌';
+
+            if (error.message.includes('câmera') || error.message.includes('camera')) {
+                title = 'Câmera Indisponível';
+                icon = '📵';
+            }
+
+            this.screens.showError(error.message, title, icon);
         }
     }
 

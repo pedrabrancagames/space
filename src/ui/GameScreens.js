@@ -23,7 +23,9 @@ export class GameScreens {
             finalScore: document.getElementById('final-score'),
             finalWave: document.getElementById('final-wave'),
             aliensKilled: document.getElementById('aliens-killed'),
-            errorMessage: document.getElementById('error-message')
+            errorMessage: document.getElementById('error-message'),
+            errorTitle: document.getElementById('error-title'),
+            errorIcon: document.getElementById('error-icon')
         };
 
         // Callbacks
@@ -118,10 +120,14 @@ export class GameScreens {
     /**
      * Mostra a tela de erro
      * @param {string} message - Mensagem de erro
+     * @param {string} title - Título do erro (opcional)
+     * @param {string} icon - Emoji do ícone (opcional)
      */
-    showError(message) {
+    showError(message, title = 'Erro', icon = '❌') {
         this.hideAll();
         this.stats.errorMessage.textContent = message;
+        this.stats.errorTitle.textContent = title;
+        this.stats.errorIcon.textContent = icon;
         this.screens.error.classList.remove('hidden');
     }
 
