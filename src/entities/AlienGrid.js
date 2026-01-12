@@ -16,8 +16,8 @@ export class AlienGrid {
             spacingX: 1.2,
             spacingY: 0.8,
             startX: 0,
-            startY: 4,  // Começa no topo
-            startZ: -5  // Distância da câmera
+            startY: 3,  // Começa no topo da tela
+            startZ: -8  // Distância da câmera (negativo = à frente)
         };
 
         // Estado do grid

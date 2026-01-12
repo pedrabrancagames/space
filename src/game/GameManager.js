@@ -78,7 +78,8 @@ export class GameManager {
         // Câmera perspectiva
         const aspect = window.innerWidth / window.innerHeight;
         this.camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 100);
-        this.camera.position.set(0, 0, 0);
+        this.camera.position.set(0, 0, 5);
+        this.camera.lookAt(0, 0, 0);
 
         // Renderer com transparência para mostrar vídeo atrás
         const canvas = document.getElementById('game-canvas');
