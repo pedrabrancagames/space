@@ -16,20 +16,21 @@ export class AlienGrid {
             spacingX: 1.2,
             spacingY: 0.8,
             startX: 0,
-            startY: 3,  // Começa no topo da tela
-            startZ: -8  // Distância da câmera (negativo = à frente)
+            startY: 5,  // Começa mais alto na tela
+            startZ: -10  // Mais longe da câmera para aliens menores visualmente
         };
 
         // Estado do grid
         this.aliens = [];
         this.direction = 1; // 1 = direita, -1 = esquerda
-        this.moveSpeed = 0.015;
-        this.dropDistance = 0.3;
-        this.baseSpeed = 0.015;
+        this.moveSpeed = 0.008; // Velocidade horizontal mais lenta
+        this.dropDistance = 0.4; // Distância menor de descida por estágio
+        this.baseSpeed = 0.008;
         this.speedMultiplier = 1;
 
-        // Limites de movimento
-        this.boundaryX = 5;
+        // Limites de movimento (mais amplos = mais movimentos horizontais antes de descer)
+        this.boundaryX = 6;
+
 
         // Animação
         this.wiggleTime = 0;
@@ -143,8 +144,8 @@ export class AlienGrid {
             needsToChangeDirection = true;
         }
 
-        // Verificar se algum alien atingiu o chão
-        if (lowestY <= -3) {
+        // Verificar se algum alien atingiu o chão (mais espaço = mais estágios)
+        if (lowestY <= -5) {
             hitGround = true;
         }
 
