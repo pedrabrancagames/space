@@ -13,24 +13,27 @@ export class AlienGrid {
         this.config = {
             rows: 5,
             cols: 11,
-            spacingX: 1.2,
-            spacingY: 0.8,
+            spacingX: 2.4,  // Dobrado para acomodar aliens maiores
+            spacingY: 1.6,  // Dobrado para acomodar aliens maiores
             startX: 0,
-            startY: 5,  // Começa mais alto na tela
-            startZ: -10  // Mais longe da câmera para aliens menores visualmente
+            startY: 6,      // Começa mais alto
+            startZ: -15,    // Mais longe para caber aliens maiores
+            alienScale: 2.0 // Escala dos aliens (dobro do original)
         };
 
         // Estado do grid
         this.aliens = [];
-        this.direction = 1; // 1 = direita, -1 = esquerda
-        this.moveSpeed = 0.008; // Velocidade horizontal mais lenta
-        this.dropDistance = 0.4; // Distância menor de descida por estágio
-        this.baseSpeed = 0.008;
+        this.direction = -1; // -1 = começa indo para esquerda
+        this.moveSpeed = 0.02; // Velocidade horizontal
+        this.dropDistance = 1.0; // 1 unidade para baixo
+        this.baseSpeed = 0.02;
         this.speedMultiplier = 1;
 
-        // Limites de movimento (mais amplos = mais movimentos horizontais antes de descer)
-        this.boundaryX = 6;
-
+        // Controle de movimento
+        this.horizontalLimit = 10; // 10 unidades para cada lado
+        this.currentHorizontalPosition = 0; // Posição horizontal atual
+        this.dropCount = 0; // Contador de descidas
+        this.maxDrops = 10; // 5 ciclos = 10 descidas (esquerda+direita = 2 descidas por ciclo)
 
         // Animação
         this.wiggleTime = 0;
@@ -39,6 +42,7 @@ export class AlienGrid {
         // Referência ao grupo principal
         this.group = null;
     }
+
 
     /**
      * Gera uma nova onda de aliens
@@ -80,7 +84,8 @@ export class AlienGrid {
             }
 
             for (let col = 0; col < this.config.cols; col++) {
-                const alien = this.factory.createAlien(alienType, 1 + wave * 0.05);
+                // Criar alien com escala configurada (2x o tamanho original)
+                const alien = this.factory.createAlien(alienType, this.config.alienScale);
 
                 const x = offsetX + col * this.config.spacingX;
                 const y = offsetY - row * this.config.spacingY;
@@ -107,7 +112,7 @@ export class AlienGrid {
     /**
      * Atualiza posição e animação dos aliens
      * @param {number} deltaTime - Tempo desde o último frame
-     * @returns {boolean} true se algum alien atingiu o chão (sempre false neste modo)
+     * @returns {boolean} true se completou os 5 ciclos de descida (game over)
      */
     update(deltaTime) {
         if (!this.group || this.aliens.length === 0) return false;
@@ -115,8 +120,42 @@ export class AlienGrid {
         // Atualizar tempo de animação
         this.wiggleTime += deltaTime * 3;
 
-        // Aliens ficam parados - sem movimento horizontal ou vertical
-        // Apenas aplicar animação de "wiggle" para dar vida visual
+        // Verificar se completou todos os ciclos (game over)
+        if (this.dropCount >= this.maxDrops) {
+            return true; // Game Over!
+        }
+
+        // Movimento horizontal
+        const movement = this.direction * this.moveSpeed;
+        this.group.position.x += movement;
+        this.currentHorizontalPosition += movement;
+
+        // Verificar se atingiu o limite horizontal (10 unidades)
+        if (Math.abs(this.currentHorizontalPosition) >= this.horizontalLimit) {
+            // Inverter direção
+            this.direction *= -1;
+
+            // Descer 1 unidade
+            this.group.position.y -= this.dropDistance;
+
+            // Atualizar originalY de todos os aliens para a animação de bounce
+            for (const row of this.aliens) {
+                for (const alien of row) {
+                    if (alien.userData.isAlive) {
+                        alien.userData.originalY -= this.dropDistance;
+                    }
+                }
+            }
+
+            // Contar a descida
+            this.dropCount++;
+            console.log(`⬇️ Descida ${this.dropCount}/${this.maxDrops}`);
+
+            // Resetar posição horizontal
+            this.currentHorizontalPosition = 0;
+        }
+
+        // Aplicar animação de "wiggle" para cada alien
         for (const row of this.aliens) {
             for (const alien of row) {
                 if (!alien.userData.isAlive) continue;
@@ -126,14 +165,14 @@ export class AlienGrid {
                 alien.rotation.z = wiggle;
 
                 // Pequena oscilação vertical (floating effect)
-                const bounce = Math.sin(this.wiggleTime * 2 + alien.userData.wiggleOffset) * 0.03;
+                const bounce = Math.sin(this.wiggleTime * 2 + alien.userData.wiggleOffset) * 0.05;
                 alien.position.y = alien.userData.originalY + bounce;
             }
         }
 
-        // Aliens não descem mais, então nunca atingem o chão
         return false;
     }
+
 
 
     /**
@@ -220,9 +259,12 @@ export class AlienGrid {
 
         this.aliens = [];
         this.group = null;
-        this.direction = 1;
+        this.direction = -1; // Começa indo para esquerda
         this.moveSpeed = this.baseSpeed;
+        this.currentHorizontalPosition = 0;
+        this.dropCount = 0;
     }
+
 
     /**
      * Limpa recursos
