@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { CameraManager } from '../camera/CameraManager.js';
+import { DeviceOrientationManager } from '../camera/DeviceOrientationManager.js';
 import { AlienGrid } from '../entities/AlienGrid.js';
 import { ShootingSystem } from '../combat/ShootingSystem.js';
 import { HUD } from '../ui/HUD.js';
@@ -25,6 +26,7 @@ export class GameManager {
         // Entidades
         this.alienGrid = null;
         this.shootingSystem = null;
+        this.deviceOrientation = null; // Controle de orientação do dispositivo
 
         // Estado do jogo
         this.state = {
@@ -112,6 +114,7 @@ export class GameManager {
         // Criar sistemas de jogo
         this.alienGrid = new AlienGrid(this.scene);
         this.shootingSystem = new ShootingSystem(this.scene, this.camera);
+        this.deviceOrientation = new DeviceOrientationManager(this.camera);
 
         console.log('✅ Three.js inicializado');
     }
@@ -152,6 +155,9 @@ export class GameManager {
             // Inicializar áudio
             await this.soundManager.init();
 
+            // Iniciar tracking de orientação do dispositivo (para AR)
+            await this.deviceOrientation.start();
+
             // Esconder telas
             this.screens.hideAll();
 
@@ -172,6 +178,7 @@ export class GameManager {
             this.gameLoop();
 
             console.log('✅ Jogo iniciado!');
+
 
         } catch (error) {
             console.error('❌ Erro ao iniciar jogo:', error);
@@ -237,6 +244,11 @@ export class GameManager {
         requestAnimationFrame(this.gameLoop);
 
         const deltaTime = this.clock.getDelta();
+
+        // Atualizar orientação da câmera baseado no giroscopio
+        if (this.deviceOrientation) {
+            this.deviceOrientation.update(deltaTime);
+        }
 
         // Atualizar aliens
         const hitGround = this.alienGrid.update(deltaTime);
